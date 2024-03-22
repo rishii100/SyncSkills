@@ -75,7 +75,7 @@ the job description. First the output should come as percentage and then keyword
         st.subheader("The Repsonse is")
         st.write(response)
     else:
-        st.write("Please uplaod the resume")"""
+        st.write("Please uplaod the resume")
 
 elif submit3:
     if uploaded_file is not None:
@@ -84,7 +84,7 @@ elif submit3:
         st.subheader("The Repsonse is")
         st.write(response)
     else:
-        st.write("Please uplaod the resume")
+        st.write("Please uplaod the resume") """
 
 
 
