@@ -1,4 +1,3 @@
-#AIzaSyAiMmoEYK0FqpRpT3KHtoR5qAZ5V9ABMTk
 
 from dotenv import load_dotenv
 
