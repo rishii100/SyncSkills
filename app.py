@@ -46,8 +46,8 @@ resume:
 """
 job_desc = 'The job description:{jd}'
 ## streamlit app
-st.title("RESUME CHECKER")
-st.text("Optimize Your Resume Using Gemini Pro")
+st.title("SyncSkills")
+st.text("Your Achievements, Your Career, Our Revolution")
 jd=st.text_area("Paste the Job Description")
 uploaded_file=st.file_uploader("Upload Your Resume",type="pdf",help="Please upload the pdf")
 
