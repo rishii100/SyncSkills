@@ -18,7 +18,7 @@ SyncSkills is a web application designed to help users evaluate resumes based on
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/SyncSkills.git
+   git clone https://github.com/rishii100/SyncSkills.git
    ```
 
 2. Navigate to the project directory:
@@ -33,7 +33,7 @@ SyncSkills is a web application designed to help users evaluate resumes based on
 
 4. Create a `.env` file in the project directory and add your Google API key:
    ```
-   GOOGLE_API_KEY=your_api_key_here
+   GOOGLE_API_KEY= " your_api_key_here "
    ```
 
 5. Run the Streamlit application:
