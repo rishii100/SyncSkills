@@ -1,6 +1,6 @@
 # SyncSkills
 
-SyncSkills is a web application designed to help users evaluate resumes based on given job descriptions. The application utilizes Google's Generative AI service (Gemini) to analyze resumes and provide feedback on their relevance to the job description.
+SyncSkills is a web application designed to help users evaluate resumes based on given job descriptions. This application utilizes Google's Generative AI service (Gemini) to analyze resumes and provide feedback on their relevance to the job description.
 
 
 ## Architecture Design
