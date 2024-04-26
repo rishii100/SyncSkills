@@ -49,7 +49,7 @@ SyncSkills is a web application designed to help users evaluate resumes based on
 2. Upload a resume in PDF format using the file uploader.
 3. Click the "Submit" button to initiate the analysis.
 4. View the generated response, including resume evaluation and suggestions for improvement.
-5. 
+
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
