@@ -13,7 +13,7 @@ genai.configure(api_key=os.getenv(st.secrets["GOOGLE_API_KEY"]))
 
 
 def get_gemini_response(input_prompt, pdf_img, job_desc,struc):
-    model=genai.GenerativeModel('gemini-vision-pro')
+    model=genai.GenerativeModel('gemini-1.5-pro')
     response=model.generate_content([input_prompt, pdf_img, job_desc,struc])
     return response.text
 
