@@ -67,7 +67,7 @@ def create_pdf(text):
 
 # -------- Streamlit UI Starts --------
 
-st.set_page_config(page_title="SyncSkills - Resume Evaluator", page_icon="📄")
+st.set_page_config(page_title="SyncSkills", page_icon="📄")
 st.title("SyncSkills 🚀")
 st.caption("Your Achievements, Your Career, Our Revolution.")
 
@@ -76,7 +76,7 @@ st.markdown("### Step 1: Paste the Job Description")
 jd = st.text_area("Job Description", height=200)
 
 # Step 2: Upload Resume
-st.markdown("### Step 2: Upload Your Resume (PDF)")
+st.markdown("### Step 2: Upload Your CV/Resume (PDF only)")
 uploaded_file = st.file_uploader("Upload your resume here", type=["pdf"])
 
 if uploaded_file:
