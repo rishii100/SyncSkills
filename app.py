@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import fitz  # PyMuPDF
 from PIL import Image
 from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 # Load environment variables
 load_dotenv()
@@ -30,6 +32,24 @@ def get_gemini_response(input_prompt, pdf_imgs, job_desc, struc):
     response = model.generate_content([input_prompt, *pdf_imgs, job_desc, struc])
     return response.text
 
+# Create a simple PDF file from text
+def create_pdf(text):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    y = height - 40  # Start near the top
+
+    for line in text.split('\n'):
+        c.drawString(40, y, line)
+        y -= 15  # Line spacing
+        if y < 40:
+            c.showPage()
+            y = height - 40
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
 # Prompt template
 input_prompt = """
 Hey, act like a highly skilled Applicant Tracking System (ATS) expert with deep knowledge of the tech industry.
@@ -38,6 +58,7 @@ Be detailed about missing skills or improvements needed.
 
 Resume:
 """
+
 # Structure for Gemini to follow
 struc = """
 Respond in the following format:
@@ -75,7 +96,6 @@ if submit:
         # Display Results
         st.subheader("📄 Evaluation Result:")
         try:
-            # Try to split and organize the response nicely
             lines = response.split("\n")
             match_line = next((line for line in lines if "Match" in line), "Match Percentage: Not found")
             improvement_lines = [line for line in lines if "improve" in line.lower() or "missing" in line.lower()]
@@ -88,7 +108,16 @@ if submit:
             # Full Response (expandable)
             with st.expander("See Full AI Evaluation"):
                 st.markdown(response)
+
+            # PDF download section
+            pdf_file = create_pdf(response)
+            st.download_button(
+                label="📄 Download Evaluation Report",
+                data=pdf_file,
+                file_name="resume_evaluation.pdf",
+                mime="application/pdf"
+            )
+
         except Exception as e:
             st.error("Error parsing AI response. Here's the full text:")
             st.text(response)
-
