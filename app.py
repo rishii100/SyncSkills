@@ -68,7 +68,7 @@ def create_pdf(text):
 # -------- Streamlit UI Starts --------
 
 st.set_page_config(page_title="SyncSkills", page_icon="📄")
-st.title("SyncSkills 🚀")
+st.title("SyncSkills")
 st.caption("Your Achievements, Your Career, Our Revolution.")
 
 # Step 1: Job Description input
