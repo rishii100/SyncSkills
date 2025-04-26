@@ -6,7 +6,7 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -32,8 +32,8 @@ def get_gemini_response(input_prompt, pdf_img, job_desc, struc):
     response = model.generate_content([input_prompt, pdf_img, job_desc, struc])
     return response.text
 
-# Function: Create fancy, clean PDF with colored box for match % 
-def create_pdf(text, match_percentage):
+# Function: Create fancy, clean PDF
+def create_pdf(text):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter,
                             rightMargin=40, leftMargin=40,
@@ -51,24 +51,6 @@ def create_pdf(text, match_percentage):
     normal_style = styles["BodyText"]
     normal_style.fontName = "Helvetica"
     normal_style.fontSize = 11
-
-    # Create the colored box for Match Percentage
-    match_box_style = styles["Heading1"]
-    match_box_style.fontName = "Helvetica-Bold"
-    match_box_style.fontSize = 18
-    match_box_style.textColor = colors.white
-
-    # Add a colored box for Match %
-    match_box = Table([[f"Match Percentage: {match_percentage}"]],
-                      colWidths=[300], rowHeights=[30])
-    match_box.setStyle([('BACKGROUND', (0, 0), (-1, -1), colors.green),
-                        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-                        ('FONTSIZE', (0, 0), (-1, -1), 18)])
-    
-    story.append(match_box)
-    story.append(Spacer(1, 12))
 
     # Split and format intelligently
     for line in text.split("\n"):
@@ -132,16 +114,16 @@ if submit:
             job_desc = f"The job description: {jd}"
             response = get_gemini_response(input_prompt, pdf_img, job_desc, struc)
 
-        # BIG & BOLD Match Percentage display with styling
+        # BIG & BOLD Match Percentage display
         match_percentage = "90%"  # Example, you can extract this dynamically from the response
-        st.markdown(f"<h1 style='text-align: center; color: green;'>**Job-Description Match: {match_percentage}**</h1>", unsafe_allow_html=True)
+        st.markdown(f"### **Job-Description Match: {match_percentage}**", unsafe_allow_html=True)
 
         # Display the rest of the evaluation result
         st.subheader("📄 Evaluation Result")
         st.markdown(response)
 
         # Create and offer Downloadable PDF
-        pdf_file = create_pdf(response, match_percentage)
+        pdf_file = create_pdf(response)
         st.download_button(
             label="📄 Download Evaluation Report",
             data=pdf_file,
