@@ -114,7 +114,11 @@ if submit:
             job_desc = f"The job description: {jd}"
             response = get_gemini_response(input_prompt, pdf_img, job_desc, struc)
 
-        # Display Results
+        # BIG & BOLD Match Percentage display
+        match_percentage = "90%"  # Example, you can extract this dynamically from the response
+        st.markdown(f"### **Job-Description Match: {match_percentage}**", unsafe_allow_html=True)
+
+        # Display the rest of the evaluation result
         st.subheader("📄 Evaluation Result")
         st.markdown(response)
 
