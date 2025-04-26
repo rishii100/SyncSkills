@@ -45,7 +45,8 @@ on Job description,relevance and the missing keywords with high accuracy
 
 resume:
 """
-job_desc = f'The job description: {jd}'
+job_desc = 'The job description:{jd}'
+
 
 ## streamlit app
 st.title("SyncSkills")
