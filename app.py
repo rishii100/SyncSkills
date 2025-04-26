@@ -133,7 +133,7 @@ if submit:
             response = get_gemini_response(input_prompt, pdf_img, job_desc, struc)
 
         # BIG & BOLD Match Percentage display with styling
-        match_percentage = match_percentage  # Example, you can extract this dynamically from the response
+        match_percentage = "90%"  # Example, you can extract this dynamically from the response
         st.markdown(f"<h1 style='text-align: center; color: green;'>**Job-Description Match: {match_percentage}**</h1>", unsafe_allow_html=True)
 
         # Display the rest of the evaluation result
