@@ -124,7 +124,7 @@ if submit:
 
         if match_percentage:
             # BIG & BOLD Match Percentage display
-            st.markdown(f"### **Job-Description Match: {match_percentage}**", unsafe_allow_html=True)
+            st.markdown(f"### Job-Description Match: {match_percentage}", unsafe_allow_html=True)
         else:
             st.warning("Couldn't extract match percentage from the response.")
 
