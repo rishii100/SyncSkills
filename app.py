@@ -73,7 +73,7 @@ if submit:
             response = get_gemini_response(input_prompt, pdf_imgs, job_desc, struc)
         
         # Display Results
-        st.subheader("Evaluation Result:")
+        st.subheader("📄 Evaluation Result:")
         try:
             # Try to split and organize the response nicely
             lines = response.split("\n")
