@@ -6,12 +6,10 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as PDFImage
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, BoxPlot
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
-from io import BytesIO
-from PIL import Image as PILImage
 
 # Load environment variables
 load_dotenv()
@@ -34,8 +32,8 @@ def get_gemini_response(input_prompt, pdf_img, job_desc, struc):
     response = model.generate_content([input_prompt, pdf_img, job_desc, struc])
     return response.text
 
-# Function: Create fancier, cooler PDF
-def create_fancy_pdf(text, match_percentage):
+# Function: Create fancy, cool PDF with colored box for Match %
+def create_pdf(text, match_percentage):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter,
                             rightMargin=40, leftMargin=40,
@@ -44,7 +42,19 @@ def create_fancy_pdf(text, match_percentage):
     styles = getSampleStyleSheet()
     story = []
 
-    # Custom style for bold headings
+    # Style for colored Match % box
+    match_style = styles["Heading1"]
+    match_style.fontSize = 22
+    match_style.textColor = colors.white
+    match_style.alignment = TA_LEFT
+
+    # Add a colored background box around the Match %
+    match_paragraph = f'<font size=12 color="{colors.white}"><b>Job-Description Match: {match_percentage}</b></font>'
+    match_box = Paragraph(match_paragraph, match_style)
+    story.append(match_box)
+    story.append(Spacer(1, 20))
+
+    # Custom style for headings and paragraphs
     heading_style = styles["Heading2"]
     heading_style.textColor = colors.darkblue
     heading_style.alignment = TA_LEFT
@@ -53,12 +63,6 @@ def create_fancy_pdf(text, match_percentage):
     normal_style = styles["BodyText"]
     normal_style.fontName = "Helvetica"
     normal_style.fontSize = 11
-
-    # Match Percentage box
-    match_percentage_box = f'<para align=center><font size=18 color=white><b>{match_percentage}</b></font></para>'
-    story.append(Spacer(1, 20))
-    story.append(Paragraph(f'<font color="#FFFFFF" bgcolor="#4CAF50">{match_percentage_box}</font>', styles["Heading1"]))
-    story.append(Spacer(1, 20))
 
     # Split and format intelligently
     for line in text.split("\n"):
@@ -122,23 +126,19 @@ if submit:
             job_desc = f"The job description: {jd}"
             response = get_gemini_response(input_prompt, pdf_img, job_desc, struc)
 
-        # BIG & BOLD Match Percentage display
-        match_percentage = "90%"  # Example, you can extract this dynamically from the response
-        st.markdown(f"### **Job-Description Match: {match_percentage}**", unsafe_allow_html=True)
+        # BIG & BOLD Match Percentage display inside a colored box
+        match_percentage = match_percentage  # Example, you can extract this dynamically from the response
+        st.markdown(f'<div style="background-color: #4CAF50; padding: 10px; font-size: 30px; color: white; font-weight: bold; border-radius: 10px;">Job-Description Match: {match_percentage}</div>', unsafe_allow_html=True)
 
         # Display the rest of the evaluation result
         st.subheader("📄 Evaluation Result")
         st.markdown(response)
 
         # Create and offer Downloadable PDF
-        pdf_file = create_fancy_pdf(response, match_percentage)
+        pdf_file = create_pdf(response, match_percentage)
         st.download_button(
             label="📄 Download Evaluation Report",
             data=pdf_file,
             file_name="resume_evaluation.pdf",
             mime="application/pdf"
         )
-
-        # Display a PDF Thumbnail preview
-        pdf_image = PILImage.open(pdf_file)
-        st.image(pdf_image, caption="PDF Preview", use_column_width=True)
