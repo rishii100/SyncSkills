@@ -32,7 +32,7 @@ def get_gemini_response(input_prompt, pdf_img, job_desc, struc):
     response = model.generate_content([input_prompt, pdf_img, job_desc, struc])
     return response.text
 
-# Function: Create fancy, clean PDF
+# Function: Create fancy clean PDF
 def create_pdf(text):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter,
@@ -42,17 +42,14 @@ def create_pdf(text):
     styles = getSampleStyleSheet()
     story = []
 
-    # Custom style for bold headings
     heading_style = styles["Heading2"]
     heading_style.textColor = colors.darkblue
     heading_style.alignment = TA_LEFT
 
-    # Normal paragraph style
     normal_style = styles["BodyText"]
     normal_style.fontName = "Helvetica"
     normal_style.fontSize = 11
 
-    # Split and format intelligently
     for line in text.split("\n"):
         if "Job-Description Match" in line:
             story.append(Paragraph(line, heading_style))
@@ -68,7 +65,7 @@ def create_pdf(text):
     buffer.seek(0)
     return buffer
 
-# --------------- Streamlit UI ---------------
+# -------- Streamlit UI Starts --------
 
 st.set_page_config(page_title="SyncSkills - Resume Evaluator", page_icon="📄")
 st.title("SyncSkills 🚀")
@@ -114,17 +111,16 @@ if submit:
             job_desc = f"The job description: {jd}"
             response = get_gemini_response(input_prompt, pdf_img, job_desc, struc)
 
-        # Dynamically extract match percentage from the response (parse it)
+        # Dynamically extract and clean match percentage
         match_percentage = None
         for line in response.split("\n"):
             if "Job-Description Match" in line:
-                # Extract match percentage from the response (this is a simple example, you can improve the parsing)
                 match_percentage = line.split(":")[1].strip()
+                match_percentage = match_percentage.replace("*", "")  # clean unwanted **
                 break
 
         if match_percentage:
-            # Match Percentage display without extra markdown symbols
-            st.markdown(f"### Job-Description Match: {match_percentage}")
+            st.markdown(f"### 🎯 Job-Description Match: {match_percentage}")
         else:
             st.warning("Couldn't extract match percentage from the response.")
 
