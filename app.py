@@ -4,9 +4,12 @@ import os
 import fitz  # PyMuPDF
 from PIL import Image
 from io import BytesIO
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from dotenv import load_dotenv
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_LEFT
 
 # Load environment variables
 load_dotenv()
@@ -14,7 +17,7 @@ load_dotenv()
 # Configure Gemini API
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-# Function: Convert uploaded PDF to images
+# Function: Convert uploaded PDF to image
 def convert_pdf_to_image(uploaded_file, page_number=0):
     pdf_document = fitz.open(stream=BytesIO(uploaded_file.read()))
     page = pdf_document[page_number]
@@ -29,30 +32,49 @@ def get_gemini_response(input_prompt, pdf_img, job_desc, struc):
     response = model.generate_content([input_prompt, pdf_img, job_desc, struc])
     return response.text
 
-# Function: Create PDF file from text
+# Function: Create fancy, clean PDF
 def create_pdf(text):
     buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    y = height - 40
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
+                            rightMargin=40, leftMargin=40,
+                            topMargin=60, bottomMargin=40)
+    
+    styles = getSampleStyleSheet()
+    story = []
 
-    for line in text.split('\n'):
-        c.drawString(40, y, line)
-        y -= 15
-        if y < 40:
-            c.showPage()
-            y = height - 40
+    # Custom style for bold headings
+    heading_style = styles["Heading2"]
+    heading_style.textColor = colors.darkblue
+    heading_style.alignment = TA_LEFT
 
-    c.save()
+    # Normal paragraph style
+    normal_style = styles["BodyText"]
+    normal_style.fontName = "Helvetica"
+    normal_style.fontSize = 11
+
+    # Split and format intelligently
+    for line in text.split("\n"):
+        if "Job-Description Match" in line:
+            story.append(Paragraph(line, heading_style))
+            story.append(Spacer(1, 12))
+        elif "describe how to improve" in line.lower():
+            story.append(Paragraph(line, heading_style))
+            story.append(Spacer(1, 12))
+        else:
+            story.append(Paragraph(line, normal_style))
+            story.append(Spacer(1, 8))
+
+    doc.build(story)
     buffer.seek(0)
     return buffer
 
 # --------------- Streamlit UI ---------------
 
+st.set_page_config(page_title="SyncSkills - Resume Evaluator", page_icon="📄")
 st.title("SyncSkills 🚀")
 st.caption("Your Achievements, Your Career, Our Revolution.")
 
-# Step 1: Get Job Description
+# Step 1: Job Description input
 st.markdown("### Step 1: Paste the Job Description")
 jd = st.text_area("Job Description", height=200)
 
@@ -63,7 +85,7 @@ uploaded_file = st.file_uploader("Upload your resume here", type=["pdf"])
 if uploaded_file:
     st.success("✅ Resume Uploaded Successfully!")
 
-# Input prompt templates
+# Input prompts
 input_prompt = """
 Hey, act like a skilled ATS (Applicant Tracking System) expert with deep knowledge of tech roles.
 Strictly evaluate the resume based on the given job description.
@@ -80,6 +102,7 @@ Respond like this:
 Be strict and professional.
 """
 
+# Submit Button
 submit = st.button("Submit")
 
 if submit:
@@ -91,14 +114,12 @@ if submit:
             job_desc = f"The job description: {jd}"
             response = get_gemini_response(input_prompt, pdf_img, job_desc, struc)
 
-        # Display response
+        # Display Results
         st.subheader("📄 Evaluation Result")
         st.markdown(response)
 
-        # Create downloadable PDF
+        # Create and offer Downloadable PDF
         pdf_file = create_pdf(response)
-
-        # Download button
         st.download_button(
             label="📄 Download Evaluation Report",
             data=pdf_file,
