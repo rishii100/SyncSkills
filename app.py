@@ -9,7 +9,8 @@ from io import BytesIO
 
 load_dotenv() 
 
-genai.configure(api_key=os.getenv(st.secrets["GOOGLE_API_KEY"]))
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+
 
 
 def get_gemini_response(input_prompt, pdf_img, job_desc,struc):
@@ -44,7 +45,8 @@ on Job description,relevance and the missing keywords with high accuracy
 
 resume:
 """
-job_desc = 'The job description:{jd}'
+job_desc = f'The job description: {jd}'
+
 ## streamlit app
 st.title("SyncSkills")
 st.text("Your Achievements, Your Career, Our Revolution")
