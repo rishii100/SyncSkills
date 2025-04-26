@@ -6,10 +6,12 @@ from PIL import Image
 from io import BytesIO
 from dotenv import load_dotenv
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as PDFImage
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
+from io import BytesIO
+from PIL import Image as PILImage
 
 # Load environment variables
 load_dotenv()
@@ -32,8 +34,8 @@ def get_gemini_response(input_prompt, pdf_img, job_desc, struc):
     response = model.generate_content([input_prompt, pdf_img, job_desc, struc])
     return response.text
 
-# Function: Create fancy, clean PDF
-def create_pdf(text):
+# Function: Create fancier, cooler PDF
+def create_fancy_pdf(text, match_percentage):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter,
                             rightMargin=40, leftMargin=40,
@@ -51,6 +53,12 @@ def create_pdf(text):
     normal_style = styles["BodyText"]
     normal_style.fontName = "Helvetica"
     normal_style.fontSize = 11
+
+    # Match Percentage box
+    match_percentage_box = f'<para align=center><font size=18 color=white><b>{match_percentage}</b></font></para>'
+    story.append(Spacer(1, 20))
+    story.append(Paragraph(f'<font color="#FFFFFF" bgcolor="#4CAF50">{match_percentage_box}</font>', styles["Heading1"]))
+    story.append(Spacer(1, 20))
 
     # Split and format intelligently
     for line in text.split("\n"):
@@ -123,10 +131,14 @@ if submit:
         st.markdown(response)
 
         # Create and offer Downloadable PDF
-        pdf_file = create_pdf(response)
+        pdf_file = create_fancy_pdf(response, match_percentage)
         st.download_button(
             label="📄 Download Evaluation Report",
             data=pdf_file,
             file_name="resume_evaluation.pdf",
             mime="application/pdf"
         )
+
+        # Display a PDF Thumbnail preview
+        pdf_image = PILImage.open(pdf_file)
+        st.image(pdf_image, caption="PDF Preview", use_column_width=True)
